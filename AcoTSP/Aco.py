@@ -1,6 +1,7 @@
 from random import randrange
-import numpy as np
+from numpy.random import choice
 class TSP :
+    solution = []
     distance = []
     pheromone = []
     visibility = []
@@ -42,7 +43,7 @@ class TSP :
         while(remain_city):
             prob = calculate_prob(current_city,remain_city)
             prob = list(filter(lambda a : a != 0 ,prob))
-            current_city = np.random.choice(remain_city,1,prob)[0] #select next city
+            current_city = choice(remain_city,10,p = prob)[0] #select next city by prob
             remain_city.remove(current_city)
             solution.append(current_city) #append city in solution
         #print("Path : ",solution)
@@ -52,6 +53,7 @@ class TSP :
         sum = 0
         for i in range(1,len(solution)) :
             sum += distance[solution[i-1]][solution[i]]
+        sum += distance[solution[-1]][solution[0]] #back to start point
         return sum
     def run(self,ant_num,repeat_time,persistence_rate=0.7,Q=2000):
         def globle_update(solution):
@@ -70,13 +72,12 @@ class TSP :
                 for j in range(i,self.city_num):
                     self.pheromone[i][j] = persistence_rate * self.pheromone[i][j] + count[i][j]
                     self.pheromone[j][i] = persistence_rate * self.pheromone[j][i] + count[i][j]
-            print_matrix(self.pheromone)
 
 
         for i in range(repeat_time) :
             solution = []
             fitness_sum = 0
-            print("------------------------------Round",i,"------------------------------------------")
+            print("------------------------------ACO Round",i,"-----------------------------------")
             for j in range(ant_num) :
                 sol = self.ant_go()
                 fitness = self.fitness(sol)
@@ -84,6 +85,7 @@ class TSP :
                 solution.append([sol,fitness])
                 if fitness < self.best :
                     self.best = fitness
+                    self.solution = sol
             globle_update(solution)
             print("Average fitness : ", fitness_sum / ant_num)
             print("Best solution : ",self.best)
@@ -109,17 +111,19 @@ def read_data(dir) :
 def print_matrix(matrix):
     for i in matrix :
         for j in i :
-            print("%.2f" % j ,end =" ")
+            print("%.2f" % j , end = ' ')
         print()
 
-
-
 if __name__ == "__main__" :
-    # distance = read_data("./Bays29.txt")
-    distance = read_data("./test.txt")
+    distance = read_data("./Bays29.txt")
+    # distance = read_data("./test.txt")
 
     aco = TSP(distance)
-    aco.run(10,100,persistence_rate=0.7,Q=200)
+    aco.run(100,15,persistence_rate=0.7,Q=200)
     print("Best solution ",aco.best)
+    for i in aco.solution :
+        print(str(i)+'->', end ='')
+    print(aco.solution[0])
+
 
 

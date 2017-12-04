@@ -146,7 +146,7 @@ if __name__ == "__main__" :
         distance = read_data(d) #read data
 
         aco = TSP(distance)
-        aco.run(ant_num=40,repeat_time=100,alpha=1.0,beta=5.0,persistence_rate=0.8,Q=200)
+        aco.run(ant_num=20,repeat_time=50,alpha=1.0,beta=2.0,persistence_rate=0.8,Q=200)
         print("---------------------%s--------------------" % d)
         print("Best solution ",aco.best)
         for i in aco.solution :

@@ -21,9 +21,10 @@ class TSP :
     def init_visibility(self):
          self.visibility = [[0 for i in range(self.city_num)]for j in range(self.city_num)]
          for i in range(self.city_num) :
-             for j in range(self.city_num) :
+             for j in range(i+1,self.city_num) :
                  if float(distance[i][j]) != 0 :
                     self.visibility[i][j] = 1/float(distance[i][j])
+                    self.visibility[j][i] = self.visibility[i][j]
     def ant_go(self,alpha = 1.0,beta = 1.0):
         def calculate_prob(current_city,remain_city) :
             prob = [0 for i in range(self.city_num)]
@@ -102,7 +103,7 @@ def read_data(dir) :
     data = open(dir,'r')
     lines = data.readlines()
     data = open(dir, 'r')
-    if len(lines[0].split(' ')) == 1 :
+    if len(lines[0].split(' ')) == 1 : # if the first line is number of city
         city_num = int(lines[0])
         citys = [[] for i in range(city_num+1)]
         # append distance data in list
@@ -124,7 +125,6 @@ def read_data(dir) :
             line = list(map(int,line))
             distance.append(line)
     return distance
-
 def print_matrix(matrix):
     for i in matrix :
         for j in i :
@@ -146,7 +146,7 @@ if __name__ == "__main__" :
         distance = read_data(d) #read data
 
         aco = TSP(distance)
-        aco.run(ant_num=40,repeat_time=3000,alpha=1.0,beta=3.0,persistence_rate=0.75,Q=200)
+        aco.run(ant_num=40,repeat_time=100,alpha=1.0,beta=5.0,persistence_rate=0.8,Q=200)
         print("---------------------%s--------------------" % d)
         print("Best solution ",aco.best)
         for i in aco.solution :
